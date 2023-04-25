@@ -1,9 +1,10 @@
 import re
 import time
 from typing import Any, Optional, List
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from bs4 import BeautifulSoup
+import gspread
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium import webdriver
@@ -32,11 +33,11 @@ class Web:
         issues = self.driver.find_elements(
             By.XPATH, 
             "//td[@class='col-5 sm-line-height']")
-        print("Issues found: %s" % len(issues))
+        print("Issues found on comicspriceguide: %s" % len(issues))
         for issue in issues:
             metadata = issue.find_element(By.CLASS_NAME, "grid_issue_info")
             if re.search(str(year), metadata.text):
-                print('Issue with matching year: %d found!' % year)
+                print('Issue with matching year: %s found!' % year)
                 issue_link = issue.find_element(
                     By.CLASS_NAME, 
                     "grid_issue").get_attribute('href')
@@ -146,6 +147,7 @@ class Comic(Web):
     title: str
     issue: int
     year: int
+    issue_link: Optional[str] = None
     graded_10: Optional[Rating.graded_10] = None
     graded_9: Optional[Rating.graded_9] = None
     graded_8: Optional[Rating.graded_8] = None
@@ -195,3 +197,33 @@ class Comic(Web):
             self.ungraded_3 = ratings.ungraded_3
             self.ungraded_2 = ratings.ungraded_2
             self.ungraded_1 = ratings.ungraded_1
+
+@dataclass
+class Speadsheet:
+
+    sheet: gspread.worksheet.Worksheet
+    unprocessed: Optional[List[List[str]]] = field(default_factory=list)
+    processed: Optional[List[List[str]]] = field(default_factory=list)
+
+    def parse_sheet(self):
+        if len(self.sheet.get_values()[1:]) == 0:
+            return False
+        for i, row in enumerate(self.sheet.get_values()[1:]):
+            if row[3] != "Scraped":
+                row.append(i + 2)
+                self.unprocessed.append(row)
+            else:
+                self.processed.append(row)
+        print('Number of unprocessed comics: %d' % len(self.unprocessed))
+        print('Number of processed comics: %d' % len(self.processed))
+        return True
+
+    def update_sheet(self, row):
+        r_idx = row[-1]
+        row.pop()
+        row[3] = "Scraped"
+        for c_idx in range(25):
+            self.sheet.update_cell(r_idx, c_idx + 1, row[c_idx])
+            time.sleep(1)
+        print('Finished adding comic to sheet!')
+
