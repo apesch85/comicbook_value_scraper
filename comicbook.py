@@ -26,5 +26,7 @@ def main(unused_argv):
     )
     comic.get()
 
+    print(comic)
+
 if __name__ == "__main__":
     app.run(main)
