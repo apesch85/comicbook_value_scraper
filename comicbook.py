@@ -19,16 +19,6 @@ def get_sheet():
 def main(unused_argv):
     del unused_argv
 
-    #comic = connector.Comic(
-    #    driver=driver,
-    #    username=FLAGS.username,
-    #    password=FLAGS.password,
-    #    title="The Amazing Spiderman",
-    #    issue=12,
-    #    year=1964,
-    #    url=url,
-    #)
-    #comic.get()
     comicbook_sheet = connector.Speadsheet(sheet=get_sheet())
     if not comicbook_sheet.parse_sheet():
         print('No comicbooks found in sheet. Exiting.')
