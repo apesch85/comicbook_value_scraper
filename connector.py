@@ -222,8 +222,7 @@ class Speadsheet:
         r_idx = row[-1]
         row.pop()
         row[3] = "Scraped"
-        for c_idx in range(25):
-            self.sheet.update_cell(r_idx, c_idx + 1, row[c_idx])
-            time.sleep(1)
+        self.sheet.update('A%s:Y%s' % (r_idx, r_idx), [row])
+        time.sleep(1)
         print('Finished adding comic to sheet!')
 

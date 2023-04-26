@@ -75,7 +75,6 @@ def main(unused_argv):
         comicbook_sheet.unprocessed[i][24] = comic.ungraded_1
         comicbook_sheet.update_sheet(comicbook_sheet.unprocessed[i])
 
-    
 
 if __name__ == "__main__":
     app.run(main)
