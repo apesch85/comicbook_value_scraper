@@ -41,7 +41,14 @@ def main(unused_argv):
         )
         print('Processing comic title: %s issue: %s year: %s' % (
             comic.title, comic.issue, comic.year))
-        comic.get()
+        if not comic.get():
+            print(
+                'Price data not found for comic title: %s issue: %s, year: %s' %
+                (comic.title, comic.issue, comic.year)
+                )
+            continue
+        print('Updating sheet for comic: %s issue: %s year: %s' % (
+            comic.title, comic.issue, comic.year))
         comicbook_sheet.unprocessed[i][4] = comic.issue_link
         comicbook_sheet.unprocessed[i][5] = comic.graded_10
         comicbook_sheet.unprocessed[i][6] = comic.ungraded_10

@@ -42,7 +42,8 @@ class Web:
                     By.CLASS_NAME, 
                     "grid_issue").get_attribute('href')
                 return issue_link
-        return ""
+            else:
+                return ""
 
     def open_link(self, link):
         self.driver.get(link)
@@ -173,6 +174,8 @@ class Comic(Web):
     def get(self):
         self.connect(self.title, self.issue)
         self.issue_link = self.find_issue(self.year)
+        if not self.issue_link:
+            return False
         if self.issue_link:
             self.open_link(self.issue_link)
             time.sleep(5)
@@ -197,6 +200,7 @@ class Comic(Web):
             self.ungraded_3 = ratings.ungraded_3
             self.ungraded_2 = ratings.ungraded_2
             self.ungraded_1 = ratings.ungraded_1
+            return True
 
 @dataclass
 class Speadsheet:
