@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 
 from bs4 import BeautifulSoup
 import gspread
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium import webdriver
@@ -58,14 +59,15 @@ class Web:
             return False
 
     def login(self, username, password):
-        self.driver.find_element(By.XPATH, '//a[@href="/login"]').click()
+        login_btn = self.driver.find_element(By.XPATH, '//a[@href="/login"]')
+        self.driver.execute_script("arguments[0].click();", login_btn) 
         user_field = self.driver.find_element(By.ID, 'user_username')
         password_field = self.driver.find_element(By.ID, 'user_password')
         login_button = self.driver.find_element(By.ID, 'btnLogin')
         user_field.send_keys(username)
         user_field.send_keys(Keys.TAB)
         password_field.send_keys(password)
-        login_button.click()
+        self.driver.execute_script("arguments[0].click();", login_button) 
         time.sleep(15)
         self.driver.back()
         self.driver.refresh()
